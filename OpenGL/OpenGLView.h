@@ -20,7 +20,7 @@ using namespace std;
 #define		MAP_SIZE	1024
 #define		CELL_SIZE	2					// 相邻顶点的距离	
 #define		STEP_SIZE	4					// 相邻顶点的距离	
-#define		MAXN		200
+#define		MAXN		500
 #define 	INF 	   0x3f3f3f3f
 
 class COpenGLView : public CView
@@ -40,7 +40,10 @@ public:
 	GLfloat lookx, looky, lookz;		//视线方向
 	bool textureEnable = false;
 	bool RoadEnable = false;
+	bool dij = false;
 	void updateLighting();
+	int p_start = 1;
+	int p_end = 1;
 public:
 	struct DemStruct {
 		string DataMark;
@@ -132,6 +135,9 @@ public:
 	afx_msg void OnDrawTexture();
 	afx_msg void OnDrawRoad();
 	afx_msg void OnDijkstra();
+	afx_msg void OnDij();
+	afx_msg void OnPic();
+	afx_msg void OnTestTest();
 };
 
 #ifndef _DEBUG  // OpenGLView.cpp 中的调试版本

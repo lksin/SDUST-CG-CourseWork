@@ -76,8 +76,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>K:\TXX\OpenGL\OpenGL开发库\include;$(IncludePath)</IncludePath>
-    <LibraryPath>K:\TXX\OpenGL\OpenGL开发库\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\OpenGL开发库\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\OpenGL开发库\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -186,7 +186,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DlgInputPoint.h" />
+    <ClInclude Include="DlgInpputPath.h" />
+    <ClInclude Include="DlgPic.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OpenGL.h" />
@@ -195,10 +196,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="test.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DlgInputPoint.cpp" />
+    <ClCompile Include="DlgInpputPath.cpp" />
+    <ClCompile Include="DlgPic.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OpenGL.cpp" />
     <ClCompile Include="OpenGLDoc.cpp" />
@@ -209,6 +212,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="test.cpp" />
     <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -218,8 +222,11 @@
     <None Include="res\OpenGL.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
     <Image Include="res\OpenGL.ico" />
     <Image Include="res\OpenGLDoc.ico" />
+    <Image Include="res\RS.bmp" />
     <Image Include="res\Toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

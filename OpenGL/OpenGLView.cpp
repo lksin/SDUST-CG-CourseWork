@@ -12,7 +12,9 @@
 
 #include "OpenGLDoc.h"
 #include "OpenGLView.h"
-#include "DlgInputPoint.h"	
+#include "DlgInpputPath.h"
+#include "DlgPic.h"
+#include "test.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,6 +48,9 @@ BEGIN_MESSAGE_MAP(COpenGLView, CView)
 	ON_COMMAND(ID_32781, &COpenGLView::OnDrawTexture)
 	ON_COMMAND(ID_32783, &COpenGLView::OnDrawRoad)
 	ON_COMMAND(ID_32784, &COpenGLView::OnDijkstra)
+	ON_COMMAND(ID_32785, &COpenGLView::OnDij)
+	ON_COMMAND(ID_32786, &COpenGLView::OnPic)
+	ON_COMMAND(ID_TEST_TEST, &COpenGLView::OnTestTest)
 END_MESSAGE_MAP()
 
 // COpenGLView 构造/析构
@@ -157,6 +162,13 @@ void COpenGLView::OnDraw(CDC* pDC)
 	{
 		glDisable(GL_LIGHTING);
 	}
+
+	glLoadIdentity();									// Reset The Matrix
+	gluLookAt(cameraX, cameraY, cameraZ, cameraX + lookx, cameraY + looky, cameraZ + lookz, 0, 1, 0);	// This Determines Where The Camera's Position And View Is
+	glEnable(GL_DEPTH_TEST);
+	//RenderHeightMap(g_HeightMap);						// Render The Height Map
+	RenderNewMap();
+
 	if (textureEnable)  //是否贴图
 	{
 		glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping
@@ -179,12 +191,7 @@ void COpenGLView::OnDraw(CDC* pDC)
 		glDisable(GL_LINE_SMOOTH);
 	}
 
-
-	glLoadIdentity();									// Reset The Matrix
-	gluLookAt(cameraX, cameraY, cameraZ, cameraX + lookx, cameraY + looky, cameraZ + lookz, 0, 1, 0);	// This Determines Where The Camera's Position And View Is
-	glEnable(GL_DEPTH_TEST);
-	//RenderHeightMap(g_HeightMap);						// Render The Height Map
-	RenderNewMap();
+	if(dij) drawPointsDijkstra(p_start, p_end);
 	glFlush();
 	SwapBuffers(pDC->m_hDC);
 }
@@ -768,7 +775,7 @@ void COpenGLView::OnLighting()
 void COpenGLView::OnReadDem()
 {
 	// TODO: 在此添加命令处理程序代码
-	LPSTR filepath = "K:\\TXX\\实习相关数据代码\\DEM.txt";
+	LPSTR filepath = "E:\\TXX\\实习相关数据代码\\DEM.txt";
 	LoadDem(filepath);
 }
 
@@ -807,7 +814,7 @@ int COpenGLView::LoadGLTextures()
 	memset(TextureImage, 0, sizeof(void*) * 1);           	// Set The Pointer To NULL
 	CString filepath;
 	//指定bmp图像。bmp宽度最好是能被100整除，如400、600等，否则可能出现贴图错误。建议使用格式工厂对图片格式和宽度进行转换。
-	filepath = "K:\\TXX\\实习相关数据代码\\RS.bmp";
+	filepath = "E:\\TXX\\实习相关数据代码\\RS.bmp";
 	char* a = (LPSTR)(LPCTSTR)filepath;
 
 	if (TextureImage[0] = LoadBMP(a))
@@ -873,7 +880,7 @@ void COpenGLView::OnDrawRoad()
 {
 	// TODO: 在此添加命令处理程序代码
 	RoadEnable = true;
-	readRoadData("K:\\TXX\\实习相关数据代码\\road.txt");
+	readRoadData("E:\\TXX\\实习相关数据代码\\road.txt");
 	Invalidate();
 }
 
@@ -962,26 +969,11 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 			}
 		}
 	}
-	Invalidate();
 }
 
 
 void COpenGLView::OnDijkstra()
-{
-	// TODO: 在此添加命令处理程序代码
-	DlgInputPoint Dlg;
-	if (RoadEnable == false) MessageBox(_T("未读入路网！"));
-	else
-	{
-		if (Dlg.DoModal() == IDOK)
-		{
-			int start, end;
-			Dlg.GetPoints(start, end);
-			drawPointsDijkstra(start, end);
-			Invalidate();
-		}
-	}
-}
+{}
 
 void COpenGLView::drawPointsDijkstra(int start, int end) //dijkstra算法+绘图，传入start 和 end 两个参数
 {
@@ -1019,11 +1011,61 @@ void COpenGLView::drawPointsDijkstra(int start, int end) //dijkstra算法+绘图
 	while (f != start && f != -1) //绘图部分，主要利用遍历path数组（存储直接前驱结点）的思想挨个找点
 	{
 		glLineWidth(6);
-		glColor3f(0, 1, 1);
+		glColor3f(1, 1, 0);
 		glBegin(GL_LINES);
 		glVertex3f(Road.vexs[f].y, Road.vexs[f].z + 13, Road.vexs[f].x);
 		glVertex3f(Road.vexs[path[f]].y, Road.vexs[path[f]].z + 13, Road.vexs[path[f]].x);
 		f = path[f];
 		glEnd();
+	}
+}
+
+void COpenGLView::OnDij()
+{
+	// TODO: 在此添加命令处理程序代码
+	DlgInpputPath Dlg;
+	if (RoadEnable == false) MessageBox(_T("未读入路网！"));
+	else
+	{
+		if (Dlg.DoModal() == IDOK)
+		{
+			p_start = Dlg.m_start - 1;
+			p_end = Dlg.m_end - 1;
+			dij = true;
+			Invalidate();
+		}
+	}
+}
+
+
+void COpenGLView::OnPic()
+{
+	// TODO: 在此添加命令处理程序代码
+	DlgPic Dlg;
+	int x = 0, y = 0;
+	if (RoadEnable == false) MessageBox(_T("未读入路网！"));
+	else
+	{
+		if (Dlg.DoModal() == IDOK)
+		{
+			/*Dlg.SetStartEnd(p_start, p_end);*/
+			p_start = Dlg.m_x - 1;
+			p_end = Dlg.m_y - 1;
+			dij = true;
+			Invalidate();
+		}
+	}
+}
+
+
+void COpenGLView::OnTestTest()
+{
+	// TODO: 在此添加命令处理程序代码
+	test Dlg;
+	int x = 0;
+	if (Dlg.DoModal() == IDOK)
+	{
+		/*Dlg.SetStartEnd(p_start, p_end);*/
+		x = Dlg.a;
 	}
 }
