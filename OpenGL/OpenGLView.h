@@ -70,6 +70,7 @@ public:
 	void COpenGLView::LoadDem(LPSTR file);
 	void readRoadData(LPSTR file);
 	void drawRoad(BYTE pRoadMap[]);
+	void drawPointsDijkstra(int start, int end);
 
 protected:
 	int LoadGLTextures();
@@ -130,6 +131,7 @@ public:
 	afx_msg void OnReadDem();
 	afx_msg void OnDrawTexture();
 	afx_msg void OnDrawRoad();
+	afx_msg void OnDijkstra();
 };
 
 #ifndef _DEBUG  // OpenGLView.cpp 中的调试版本

@@ -12,6 +12,7 @@
 
 #include "OpenGLDoc.h"
 #include "OpenGLView.h"
+#include "DlgInputPoint.h"	
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,6 +45,7 @@ BEGIN_MESSAGE_MAP(COpenGLView, CView)
 	ON_COMMAND(ID_32780, &COpenGLView::OnReadDem)
 	ON_COMMAND(ID_32781, &COpenGLView::OnDrawTexture)
 	ON_COMMAND(ID_32783, &COpenGLView::OnDrawRoad)
+	ON_COMMAND(ID_32784, &COpenGLView::OnDijkstra)
 END_MESSAGE_MAP()
 
 // COpenGLView 构造/析构
@@ -911,7 +913,7 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 	// TODO: 在此处添加实现代码.
 	int x, y, z;
 
-	if (!pRoadMap) return;					// 确认高度图存在
+	if (!pRoadMap) return;	// 确认高度图存在
 
 	int vexnum = Road.vexnum;
 	int arcnum = Road.arcnum;
@@ -924,8 +926,25 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 		z = Road.vexs[i].z;
 		glColor3f(1, 0.2, 0);
 		glVertex3f(y, z + 10, x);
+		//glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, Road.vexs[i].name);
 	}
 	glEnd();
+
+	// 在点旁边绘制点的名称
+	for (int i = 0; i < vexnum; i++)
+	{
+		x = Road.vexs[i].x;
+		y = Road.vexs[i].y;
+		z = Road.vexs[i].z;
+		glColor3f(1, 1, 0); // 设置字体颜色
+		glRasterPos3f(y, z + 10, x); // 设置文本位置
+
+		const char* name = Road.vexs[i].name.c_str(); // 转换 string 为 const char*
+		for (const char* c = name; *c != '\0'; c++)
+		{
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c); // 使用 GLUT 绘制字符
+		}
+	}
 
 	for (int i = 0; i < vexnum; i++)  //绘制路线（边） 
 	{
@@ -946,3 +965,65 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 	Invalidate();
 }
 
+
+void COpenGLView::OnDijkstra()
+{
+	// TODO: 在此添加命令处理程序代码
+	DlgInputPoint Dlg;
+	if (RoadEnable == false) MessageBox(_T("未读入路网！"));
+	else
+	{
+		if (Dlg.DoModal() == IDOK)
+		{
+			int start, end;
+			Dlg.GetPoints(start, end);
+			drawPointsDijkstra(start, end);
+			Invalidate();
+		}
+	}
+}
+
+void COpenGLView::drawPointsDijkstra(int start, int end) //dijkstra算法+绘图，传入start 和 end 两个参数
+{
+	bool S[MAXN];
+	int D[MAXN], i, min, j, w, k, m;
+	int path[MAXN];
+	for (i = 0; i < Road.vexnum; i++)
+	{
+		S[i] = false;
+		D[i] = Road.arcs[start][i];
+	}
+	S[start] = true;
+	D[start] = 0;
+	for (i = 0; i < Road.vexnum; i++)
+		if (D[i] == INF)path[i] = -1;
+		else path[i] = start;
+	for (i = 1; i < Road.vexnum; i++)
+	{
+		min = INF;
+		for (j = 0; j < Road.vexnum; j++)
+			if (!S[j] && D[j] < min)
+			{
+				min = D[j];
+				k = j;
+			}
+		S[k] = true;
+		for (w = 0; w < Road.vexnum; w++)
+			if (!S[w] && D[k] + Road.arcs[k][w] < D[w])
+			{
+				D[w] = min + Road.arcs[k][w];
+				path[w] = k;
+			}
+	}
+	int f = end;
+	while (f != start && f != -1) //绘图部分，主要利用遍历path数组（存储直接前驱结点）的思想挨个找点
+	{
+		glLineWidth(6);
+		glColor3f(0, 1, 1);
+		glBegin(GL_LINES);
+		glVertex3f(Road.vexs[f].y, Road.vexs[f].z + 13, Road.vexs[f].x);
+		glVertex3f(Road.vexs[path[f]].y, Road.vexs[path[f]].z + 13, Road.vexs[path[f]].x);
+		f = path[f];
+		glEnd();
+	}
+}
