@@ -34,4 +34,13 @@ public:
 	void GetNum(int& x, int& y);
 	afx_msg void OnBnClickedCheck1();
 	afx_msg void OnBnClickedCheck2();
+	afx_msg void OnBnClickedYanlake();
+	afx_msg void OnBnClickedSchoolsouthgate();
+	afx_msg void OnBnClickedPlaygroud();
+	afx_msg void OnBnClickedTaishanpark();
+	afx_msg void OnBnClickedOldlibrary();
+	afx_msg void OnBnClickedJ14();
+	afx_msg void OnBnClickedCanteenb();
+	afx_msg void OnBnClickedS1();
+	afx_msg void OnBnClickedJ13();
 };

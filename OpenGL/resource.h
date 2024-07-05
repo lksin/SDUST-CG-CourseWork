@@ -21,6 +21,16 @@
 #define IDC_gaodi                       1016
 #define IDC_CHECK2                      1017
 #define IDC_hos                         1017
+#define IDC_YanLake                     1018
+#define IDC_SchoolSouthGate             1019
+#define IDC_Playgroud                   1020
+#define IDC_TaishanPark                 1021
+#define IDC_OldLibrary                  1022
+#define IDC_J14                         1023
+#define IDC_CanteenB                    1024
+#define IDC_S1                          1025
+#define IDC_CHECK10                     1026
+#define IDC_J13                         1026
 #define ID_32771                        32771
 #define ID_OPENRAWFILE                  32772
 #define ID_LINES                        32774
@@ -37,14 +47,15 @@
 #define ID_32785                        32785
 #define ID_32786                        32786
 #define ID_TEST_TEST                    32787
+#define ID_32788                        32788
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        322
-#define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1018
+#define _APS_NEXT_COMMAND_VALUE         32789
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

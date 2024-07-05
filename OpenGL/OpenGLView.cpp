@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(COpenGLView, CView)
 	ON_COMMAND(ID_32785, &COpenGLView::OnDij)
 	ON_COMMAND(ID_32786, &COpenGLView::OnPic)
 	ON_COMMAND(ID_TEST_TEST, &COpenGLView::OnTestTest)
+	ON_COMMAND(ID_32788, &COpenGLView::OnDraw3DBuilding)
 END_MESSAGE_MAP()
 
 // COpenGLView 构造/析构
@@ -937,21 +938,21 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 	}
 	glEnd();
 
-	// 在点旁边绘制点的名称
-	for (int i = 0; i < vexnum; i++)
-	{
-		x = Road.vexs[i].x;
-		y = Road.vexs[i].y;
-		z = Road.vexs[i].z;
-		glColor3f(1, 1, 0); // 设置字体颜色
-		glRasterPos3f(y, z + 10, x); // 设置文本位置
+	//// 在点旁边绘制点的名称
+	//for (int i = 0; i < vexnum; i++)
+	//{
+	//	x = Road.vexs[i].x;
+	//	y = Road.vexs[i].y;
+	//	z = Road.vexs[i].z;
+	//	glColor3f(1, 1, 0); // 设置字体颜色
+	//	glRasterPos3f(y, z + 10, x); // 设置文本位置
 
-		const char* name = Road.vexs[i].name.c_str(); // 转换 string 为 const char*
-		for (const char* c = name; *c != '\0'; c++)
-		{
-			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c); // 使用 GLUT 绘制字符
-		}
-	}
+	//	const char* name = Road.vexs[i].name.c_str(); // 转换 string 为 const char*
+	//	for (const char* c = name; *c != '\0'; c++)
+	//	{
+	//		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c); // 使用 GLUT 绘制字符
+	//	}
+	//}
 
 	for (int i = 0; i < vexnum; i++)  //绘制路线（边） 
 	{
@@ -963,8 +964,8 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 				glLineWidth(5);
 				glColor3f(1, 0, 0.3); //修改线段颜色
 				glBegin(GL_LINES);
-				glVertex3f(Road.vexs[i].y, Road.vexs[i].z + 10, Road.vexs[i].x);
-				glVertex3f(Road.vexs[j].y, Road.vexs[j].z + 10, Road.vexs[j].x);
+				glVertex3f(Road.vexs[i].y, Road.vexs[i].z + dem_height, Road.vexs[i].x);
+				glVertex3f(Road.vexs[j].y, Road.vexs[j].z + dem_height, Road.vexs[j].x);
 				glEnd();
 			}
 		}
@@ -1013,8 +1014,8 @@ void COpenGLView::drawPointsDijkstra(int start, int end) //dijkstra算法+绘图
 		glLineWidth(6);
 		glColor3f(1, 1, 0);
 		glBegin(GL_LINES);
-		glVertex3f(Road.vexs[f].y, Road.vexs[f].z + 13, Road.vexs[f].x);
-		glVertex3f(Road.vexs[path[f]].y, Road.vexs[path[f]].z + 13, Road.vexs[path[f]].x);
+		glVertex3f(Road.vexs[f].y, Road.vexs[f].z + dem_height + 5, Road.vexs[f].x);
+		glVertex3f(Road.vexs[path[f]].y, Road.vexs[path[f]].z + dem_height + 5, Road.vexs[path[f]].x);
 		f = path[f];
 		glEnd();
 	}
@@ -1069,3 +1070,36 @@ void COpenGLView::OnTestTest()
 		x = Dlg.a;
 	}
 }
+
+void COpenGLView::IncreaseHeightInRegion(int startX, int startY, int width, int height, float increaseAmount) {
+	for (int i = startX; i < startX + width && i < DemStruct.row; ++i) {
+		for (int j = startY; j < startY + height && j < DemStruct.col; ++j) {
+			m_height[i][j] += increaseAmount;
+		}
+	}
+
+	Invalidate(); // Redraw the view to reflect the changes
+}
+void COpenGLView::IncreaseHeight() {
+	for (int i = 0; i < DemStruct.row; ++i) {
+		for (int j = 0; j < DemStruct.col; ++j) {
+			m_height[i][j] *= 1.7;
+		}
+	}
+	dem_height *= 3.2;
+	Invalidate();
+}
+
+void COpenGLView::OnDraw3DBuilding()
+{
+	// TODO: 在此添加命令处理程序代码
+	IncreaseHeight();
+    IncreaseHeightInRegion(30, 45, 2, 3, 50.0f);
+	IncreaseHeightInRegion(26, 50, 2, 4, 50.0f);
+	IncreaseHeightInRegion(24, 55, 2, 4, 50.0f);
+	IncreaseHeightInRegion(19, 55, 3, 4, 50.0f);
+	IncreaseHeightInRegion(37, 60, 2, 3, 50.0f);
+
+}
+
+

@@ -44,6 +44,7 @@ public:
 	void updateLighting();
 	int p_start = 1;
 	int p_end = 1;
+	int dem_height = 10;
 public:
 	struct DemStruct {
 		string DataMark;
@@ -74,6 +75,9 @@ public:
 	void readRoadData(LPSTR file);
 	void drawRoad(BYTE pRoadMap[]);
 	void drawPointsDijkstra(int start, int end);
+	void IncreaseHeightInRegion(int startX, int startY, int width, int height, float increaseAmount);
+	void IncreaseHeight();
+
 
 protected:
 	int LoadGLTextures();
@@ -138,6 +142,7 @@ public:
 	afx_msg void OnDij();
 	afx_msg void OnPic();
 	afx_msg void OnTestTest();
+	afx_msg void OnDraw3DBuilding();
 };
 
 #ifndef _DEBUG  // OpenGLView.cpp 中的调试版本
