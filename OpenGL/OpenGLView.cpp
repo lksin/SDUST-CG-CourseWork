@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(COpenGLView, CView)
 	ON_COMMAND(ID_32786, &COpenGLView::OnPic)
 	ON_COMMAND(ID_TEST_TEST, &COpenGLView::OnTestTest)
 	ON_COMMAND(ID_32788, &COpenGLView::OnDraw3DBuilding)
+	ON_COMMAND(ID_32789, &COpenGLView::OnTrueLighting)
 END_MESSAGE_MAP()
 
 // COpenGLView 构造/析构
@@ -125,7 +126,7 @@ void COpenGLView::OnDraw(CDC* pDC)
 
 	// TODO: 在此处为本机数据添加绘制代码
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glClearColor(0.0, 0.8, 1.0, 1.0);	//设置背景颜色
 
 	if (lightingRender)
 	{
@@ -134,8 +135,8 @@ void COpenGLView::OnDraw(CDC* pDC)
 		GLfloat m_lightSpe[4];    //镜面反射光参数
 		GLfloat m_shininess;
 
-		m_lightAmb[0] = 5.2f;   m_lightAmb[1] = 5.2f;
-		m_lightAmb[2] = 5.2f;   m_lightAmb[3] = 3.0f;
+		m_lightAmb[0] = 6.2f;   m_lightAmb[1] = 6.2f;
+		m_lightAmb[2] = 6.2f;   m_lightAmb[3] = 5.0f;
 
 		m_lightDif[0] = 5.0f;   m_lightDif[1] = 5.0f;
 		m_lightDif[2] = 5.0f;   m_lightDif[3] = 5.0f;
@@ -155,12 +156,9 @@ void COpenGLView::OnDraw(CDC* pDC)
 		glEnable(GL_NORMALIZE);  //法向量单位化
 		glEnable(GL_POLYGON_SMOOTH);
 		glShadeModel(GL_SMOOTH);
+		
 
-		// 更新光源位置
-		//updateLighting();
-	}
-	else
-	{
+	} else {
 		glDisable(GL_LIGHTING);
 	}
 
@@ -710,13 +708,13 @@ void COpenGLView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	if (nChar == VK_DOWN) //S键
 	{
-		cameraY -= 60;
+		cameraY -= 40;
 		Invalidate();
 	}
 
 	if (nChar == VK_UP)//W键
 	{
-		cameraY += 60;
+		cameraY += 40;
 		Invalidate();
 	}
 
@@ -920,7 +918,7 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 {
 	// TODO: 在此处添加实现代码.
 	int x, y, z;
-
+	\
 	if (!pRoadMap) return;	// 确认高度图存在
 
 	int vexnum = Road.vexnum;
@@ -938,21 +936,22 @@ void COpenGLView::drawRoad(BYTE pRoadMap[])
 	}
 	glEnd();
 
-	//// 在点旁边绘制点的名称
-	//for (int i = 0; i < vexnum; i++)
-	//{
-	//	x = Road.vexs[i].x;
-	//	y = Road.vexs[i].y;
-	//	z = Road.vexs[i].z;
-	//	glColor3f(1, 1, 0); // 设置字体颜色
-	//	glRasterPos3f(y, z + 10, x); // 设置文本位置
+	// 在点旁边绘制点的名称
+	for (int i = 0; i < vexnum; i++)
+	{
+		x = Road.vexs[i].x;
+		y = Road.vexs[i].y;
+		z = Road.vexs[i].z;
+		glColor3f(1, 0.3, 0.0); // 设置字体颜色
+		glRasterPos3f(y, z + dem_height + 10, x); // 设置文本位置
 
-	//	const char* name = Road.vexs[i].name.c_str(); // 转换 string 为 const char*
-	//	for (const char* c = name; *c != '\0'; c++)
-	//	{
-	//		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c); // 使用 GLUT 绘制字符
-	//	}
-	//}
+		const char* name = Road.vexs[i].name.c_str(); // 转换 string 为 const char*
+		for (const char* c = name; *c != '\0'; c++)
+		{
+			if(*c != '1')
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c); // 使用 GLUT 绘制字符
+		}
+	}
 
 	for (int i = 0; i < vexnum; i++)  //绘制路线（边） 
 	{
@@ -978,9 +977,10 @@ void COpenGLView::OnDijkstra()
 
 void COpenGLView::drawPointsDijkstra(int start, int end) //dijkstra算法+绘图，传入start 和 end 两个参数
 {
-	bool S[MAXN];
-	int D[MAXN], i, min, j, w, k, m;
-	int path[MAXN];
+	bool S[MAXN];//权重最小的点集合
+	int D[MAXN];//distances
+	int i, min, j, w, k, m;
+	int path[MAXN];//前驱结点
 	for (i = 0; i < Road.vexnum; i++)
 	{
 		S[i] = false;
@@ -1099,7 +1099,26 @@ void COpenGLView::OnDraw3DBuilding()
 	IncreaseHeightInRegion(24, 55, 2, 4, 50.0f);
 	IncreaseHeightInRegion(19, 55, 3, 4, 50.0f);
 	IncreaseHeightInRegion(37, 60, 2, 3, 50.0f);
-
+	IncreaseHeightInRegion(42, 64, 2, 3, 50.0f);  
+	IncreaseHeightInRegion(32, 75, 2, 5, 50.0f);
 }
 
 
+
+
+void COpenGLView::OnTrueLighting()
+{
+	// TODO: 在此添加命令处理程序代码
+	if (turelighting)
+	{
+		lightingRender = false;
+		AfxGetMainWnd()->GetMenu()->ModifyMenu(ID_32789, MF_BYCOMMAND, ID_32789, _T("打开真实感灯光"));
+	}
+	else
+	{
+		lightingRender = true;
+		AfxGetMainWnd()->GetMenu()->ModifyMenu(ID_32789, MF_BYCOMMAND, ID_32789, _T("关闭真实感灯光"));
+	}
+	Invalidate();
+
+}

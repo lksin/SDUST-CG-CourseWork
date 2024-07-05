@@ -39,6 +39,7 @@ public:
 	GLfloat cameraX, cameraY, cameraZ;	//视点位置
 	GLfloat lookx, looky, lookz;		//视线方向
 	bool textureEnable = false;
+	bool turelighting = false;
 	bool RoadEnable = false;
 	bool dij = false;
 	void updateLighting();
@@ -143,6 +144,7 @@ public:
 	afx_msg void OnPic();
 	afx_msg void OnTestTest();
 	afx_msg void OnDraw3DBuilding();
+	afx_msg void OnTrueLighting();
 };
 
 #ifndef _DEBUG  // OpenGLView.cpp 中的调试版本
